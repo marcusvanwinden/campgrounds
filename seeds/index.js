@@ -1,0 +1,40 @@
+const mongoose = require('mongoose');
+const cities = require('./cities');
+const { places, descriptors } = require('./seedHelpers');
+const Campground = require('../models/campground');
+
+mongoose.connect('mongodb://localhost/campgrounds', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  console.log('Database connected');
+});
+
+function randomChoice(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+async function seedDB() {
+  await Campground.deleteMany({});
+
+  for (let i = 0; i < 50; i++) {
+    const randomCity = randomChoice(cities);
+    const campground = await new Campground({
+      location: `${randomCity.city}, ${randomCity.state}`,
+      title: `${randomChoice(descriptors)} ${randomChoice(places)}`,
+    });
+    await campground.save();
+  }
+
+  const campground = new Campground({ title: 'Purple Fields' });
+  await campground.save();
+}
+
+seedDB().then(() => {
+  db.close();
+});
