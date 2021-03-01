@@ -5,6 +5,8 @@ const Campground = require('../models/campground');
 
 mongoose.connect('mongodb://localhost/campgrounds', {
   useNewUrlParser: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
   useUnifiedTopology: true,
 });
 
@@ -35,9 +37,6 @@ async function seedDB() {
     });
     await campground.save();
   }
-
-  const campground = new Campground({ title: 'Purple Fields' });
-  await campground.save();
 }
 
 seedDB().then(() => {
