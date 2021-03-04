@@ -57,16 +57,6 @@ app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
 });
-
-app.get('/fakeUser', async (req, res) => {
-  const user = new User({
-    email: 'marcus@gmail.com',
-    username: 'marcusvanwinden',
-  });
-  const newUser = await User.register(user, 'chicken');
-  res.send(newUser);
-});
-
 app.use('/', userRoutes);
 app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/reviews', reviewRoutes);
