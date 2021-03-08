@@ -46,6 +46,10 @@ async function seedDB() {
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, quod praesentium eligendi ea obcaecati hic voluptate natus harum enim, aliquam, molestiae eius repellat assumenda placeat corrupti perspiciatis blanditiis pariatur aspernatur.',
       price: randomPrice,
+      geometry: {
+        type: 'Point',
+        coordinates: [17.6754094331351, 64.9648751621697],
+      },
     });
     await campground.save();
   }
