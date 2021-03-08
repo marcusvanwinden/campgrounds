@@ -31,7 +31,18 @@ async function seedDB() {
       author: '6040d5c47cb4aae52696833c',
       location: `${randomCity.city}, ${randomCity.state}`,
       title: `${randomChoice(descriptors)} ${randomChoice(places)}`,
-      image: `https://source.unsplash.com/collection/483251`,
+      images: [
+        {
+          url:
+            'https://res.cloudinary.com/marcusvanwinden/image/upload/v1615114684/Campgrounds/zcwjfzitylfpmp1boxgl.jpg',
+          filename: 'Campgrounds/zcwjfzitylfpmp1boxgl',
+        },
+        {
+          url:
+            'https://res.cloudinary.com/marcusvanwinden/image/upload/v1615114684/Campgrounds/zpciifetrerf0otz9fvq.jpg',
+          filename: 'Campgrounds/zpciifetrerf0otz9fvq',
+        },
+      ],
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, quod praesentium eligendi ea obcaecati hic voluptate natus harum enim, aliquam, molestiae eius repellat assumenda placeat corrupti perspiciatis blanditiis pariatur aspernatur.',
       price: randomPrice,
