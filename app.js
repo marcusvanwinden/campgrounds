@@ -13,13 +13,17 @@ const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const session = require('express-session');
+const MongoStore = require('connect-mongo').default;
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const helmet = require('helmet');
 
-mongoose.connect('mongodb://localhost:27017/campgrounds', {
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/campgrounds';
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
+
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useFindAndModify: false,
   useCreateIndex: true,
@@ -40,10 +44,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(mongoSanitize());
+
 app.use(
   session({
+    store: MongoStore.create({
+      mongoUrl: dbUrl,
+      touchAfter: 24 * 60 * 60,
+      secret,
+    }),
     name: 'session',
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
