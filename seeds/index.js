@@ -24,13 +24,20 @@ function randomChoice(array) {
 async function seedDB() {
   await Campground.deleteMany({});
 
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 400; i++) {
     const randomCity = randomChoice(cities);
     const randomPrice = Math.floor(Math.random() * 20) + 10;
     const campground = await new Campground({
+      title: `${randomChoice(descriptors)} ${randomChoice(places)}`,
+      geometry: {
+        type: 'Point',
+        coordinates: [randomCity.longitude, randomCity.latitude],
+      },
+      price: randomPrice,
       author: '6040d5c47cb4aae52696833c',
       location: `${randomCity.city}, ${randomCity.state}`,
-      title: `${randomChoice(descriptors)} ${randomChoice(places)}`,
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, quod praesentium eligendi ea obcaecati hic voluptate natus harum enim, aliquam, molestiae eius repellat assumenda placeat corrupti perspiciatis blanditiis pariatur aspernatur.',
       images: [
         {
           url:
@@ -43,13 +50,6 @@ async function seedDB() {
           filename: 'Campgrounds/zpciifetrerf0otz9fvq',
         },
       ],
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, quod praesentium eligendi ea obcaecati hic voluptate natus harum enim, aliquam, molestiae eius repellat assumenda placeat corrupti perspiciatis blanditiis pariatur aspernatur.',
-      price: randomPrice,
-      geometry: {
-        type: 'Point',
-        coordinates: [17.6754094331351, 64.9648751621697],
-      },
     });
     await campground.save();
   }
