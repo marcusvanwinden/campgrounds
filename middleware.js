@@ -1,7 +1,7 @@
 const ExpressError = require('./utils/ExpressError');
-const { campgroundSchema, reviewSchema } = require('./schemas');
 const Campground = require('./models/campground');
 const Review = require('./models/review');
+const { campgroundSchema, reviewSchema } = require('./schemas');
 
 function isLoggedIn(req, res, next) {
   if (!req.isAuthenticated()) {
@@ -9,7 +9,7 @@ function isLoggedIn(req, res, next) {
     req.flash('error', 'Must be signed in first');
     return res.redirect('/login');
   }
-  next();
+  return next();
 }
 
 async function isAuthor(req, res, next) {
@@ -18,7 +18,7 @@ async function isAuthor(req, res, next) {
     req.flash('error', 'You do not have permission to do that');
     return res.redirect(`/campgrounds/${req.params.id}`);
   }
-  next();
+  return next();
 }
 
 async function isReviewAuthor(req, res, next) {
@@ -27,17 +27,16 @@ async function isReviewAuthor(req, res, next) {
     req.flash('error', 'You do not have permission to do that');
     return res.redirect(`/campgrounds/${req.params.id}`);
   }
-  next();
+  return next();
 }
 
 function validateCampground(req, res, next) {
   const { error } = campgroundSchema.validate(req.body);
-
   if (error) {
     const message = error.details.map((element) => element.message).join(', ');
     throw new ExpressError(message, 400);
   } else {
-    next();
+    return next();
   }
 }
 
@@ -47,7 +46,7 @@ function validateReview(req, res, next) {
     const message = error.details.map((element) => element.message).join(', ');
     throw new ExpressError(message, 400);
   } else {
-    next();
+    return next();
   }
 }
 

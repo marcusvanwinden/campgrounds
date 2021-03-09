@@ -7,23 +7,20 @@ const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const mongoSanitize = require('express-mongo-sanitize');
-const ExpressError = require('./utils/ExpressError');
-const methodOverride = require('method-override');
-const userRoutes = require('./routes/users');
-const campgroundRoutes = require('./routes/campgrounds');
-const reviewRoutes = require('./routes/reviews');
+const helmet = require('helmet');
 const session = require('express-session');
-const MongoStore = require('connect-mongo').default;
+const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const MongoStore = require('connect-mongo').default;
+const ExpressError = require('./utils/ExpressError');
+const userRoutes = require('./routes/users');
+const campgroundRoutes = require('./routes/campgrounds');
+const reviewRoutes = require('./routes/reviews');
 const User = require('./models/user');
-const helmet = require('helmet');
 
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/campgrounds';
-const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
-
-mongoose.connect(dbUrl, {
+mongoose.connect(process.env.DB_URL, {
   useNewUrlParser: true,
   useFindAndModify: false,
   useCreateIndex: true,
@@ -32,9 +29,6 @@ mongoose.connect(dbUrl, {
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-  console.log('Database connected');
-});
 
 const app = express();
 app.engine('ejs', ejsMate);
@@ -48,12 +42,12 @@ app.use(mongoSanitize());
 app.use(
   session({
     store: MongoStore.create({
-      mongoUrl: dbUrl,
+      mongoUrl: process.env.DB_URL,
       touchAfter: 24 * 60 * 60,
-      secret,
+      secret: process.env.SECRET,
     }),
     name: 'session',
-    secret,
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -103,7 +97,7 @@ app.use(
         "'self'",
         'blob:',
         'data:',
-        'https://res.cloudinary.com/marcusvanwinden/', //SHOULD MATCH YOUR CLOUDINARY ACCOUNT!
+        'https://res.cloudinary.com/marcusvanwinden/',
         'https://images.unsplash.com/',
       ],
       fontSrc: ["'self'", ...fontSrcUrls],
@@ -135,7 +129,7 @@ app.all('*', (req, res, next) => {
   next(new ExpressError('Page not found', 404));
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = 'Something went wrong';
   res.status(statusCode).render('error', { err });
