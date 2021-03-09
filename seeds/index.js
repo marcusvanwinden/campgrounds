@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 const cities = require('./cities');
+const images = require('./images');
 const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campground');
 
-mongoose.connect('mongodb://localhost/campgrounds', {
+// const dbUrl = 'mongodb://localhost:27017/campgrounds';
+const dbUrl =
+  'mongodb+srv://marcusvanwinden:satbok-vogmex-7zodTo@campgrounds.w5slp.mongodb.net/Campgrounds?retryWrites=true&w=majority';
+
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useFindAndModify: false,
   useCreateIndex: true,
@@ -24,7 +29,7 @@ function randomChoice(array) {
 async function seedDB() {
   await Campground.deleteMany({});
 
-  for (let i = 0; i < 400; i++) {
+  for (let i = 0; i < 20; i++) {
     const randomCity = randomChoice(cities);
     const randomPrice = Math.floor(Math.random() * 20) + 10;
     const campground = await new Campground({
@@ -34,22 +39,11 @@ async function seedDB() {
         coordinates: [randomCity.longitude, randomCity.latitude],
       },
       price: randomPrice,
-      author: '6040d5c47cb4aae52696833c',
+      author: '604682f02e8222bd36b415db',
       location: `${randomCity.city}, ${randomCity.state}`,
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, quod praesentium eligendi ea obcaecati hic voluptate natus harum enim, aliquam, molestiae eius repellat assumenda placeat corrupti perspiciatis blanditiis pariatur aspernatur.',
-      images: [
-        {
-          url:
-            'https://res.cloudinary.com/marcusvanwinden/image/upload/v1615114684/Campgrounds/zcwjfzitylfpmp1boxgl.jpg',
-          filename: 'Campgrounds/zcwjfzitylfpmp1boxgl',
-        },
-        {
-          url:
-            'https://res.cloudinary.com/marcusvanwinden/image/upload/v1615114684/Campgrounds/zpciifetrerf0otz9fvq.jpg',
-          filename: 'Campgrounds/zpciifetrerf0otz9fvq',
-        },
-      ],
+      images: [images[Math.floor(Math.random() * images.length)]],
     });
     await campground.save();
   }
